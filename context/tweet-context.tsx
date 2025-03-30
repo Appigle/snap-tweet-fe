@@ -29,7 +29,7 @@ export function TweetProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   // Update the API URL
-  const API_URL = "https://snap-tweet-be.vercel.app//api";
+  const API_URL = "https://snap-tweet-be.vercel.app/api";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   // Update the API endpoints and field names to match the provided API
-  const API_URL = "https://snap-tweet-be.vercel.app//api";
+  const API_URL = "https://snap-tweet-be.vercel.app/api";
 
   useEffect(() => {
     // Check if user is logged in
