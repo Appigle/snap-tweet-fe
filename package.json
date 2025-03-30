@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "netlify:build": "netlify build",
     "start": "next start",
     "lint": "next lint",
     "jest-test": "jest --silent",
@@ -65,6 +66,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@netlify/next": "^1.4.9",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.6.1",

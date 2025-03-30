@@ -1,3 +1,5 @@
+const { withNetlify } = require("@netlify/next");
+
 let userConfig = undefined;
 try {
   userConfig = await import("./v0-user-next.config");
@@ -20,28 +22,6 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
-  },
-  async headers() {
-    return [
-      {
-        // Apply these headers to all routes
-        source: "/:path*",
-        headers: [
-          {
-            key: "Access-Control-Allow-Origin",
-            value: "*",
-          },
-          {
-            key: "Access-Control-Allow-Methods",
-            value: "GET, POST, PUT, DELETE, OPTIONS",
-          },
-          {
-            key: "Access-Control-Allow-Headers",
-            value: "X-Requested-With, Content-Type, Authorization",
-          },
-        ],
-      },
-    ];
   },
 };
 
@@ -67,4 +47,4 @@ function mergeConfig(nextConfig, userConfig) {
   }
 }
 
-export default nextConfig;
+export default withNetlify(nextConfig);
