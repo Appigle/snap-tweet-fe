@@ -61,11 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Update the login function to match the API
   const login = async (email: string, password: string) => {
     try {
+      console.log("Attempting login with:", { email });
       const response = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });
 
+      console.log("Login response:", response.data);
       // Update to match the API response structure
       const token = response.data.token;
       localStorage.setItem("token", token);
@@ -73,6 +75,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Fetch user details with the token
       await fetchUser(token);
     } catch (error: any) {
+      console.error("Login error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers,
+      });
       if (error.response) {
         throw new Error(error.response.data.message || "Login failed");
       }
