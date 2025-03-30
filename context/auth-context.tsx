@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axiosInstance from "@/lib/axios-config";
 import {
   createContext,
   useContext,
@@ -28,8 +28,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  // Update the API endpoints and field names to match the provided API
-  const API_URL = "https://snap-tweet-be.vercel.app/api";
 
   useEffect(() => {
     // Check if user is logged in
@@ -41,14 +39,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Update the fetchUser function to use the correct endpoint
+  // Update the fetchUser function to use the configured axios instance
   const fetchUser = async (token: string) => {
     try {
-      const response = await axios.get(`${API_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axiosInstance.get("/auth/me");
       setUser(response.data);
     } catch (error) {
       console.error("Failed to fetch user:", error);
@@ -58,17 +52,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Update the login function to match the API
+  // Update the login function to use the configured axios instance
   const login = async (email: string, password: string) => {
     try {
       console.log("Attempting login with:", { email });
-      const response = await axios.post(`${API_URL}/auth/login`, {
+      const response = await axiosInstance.post("/auth/login", {
         email,
         password,
       });
 
       console.log("Login response:", response.data);
-      // Update to match the API response structure
       const token = response.data.token;
       localStorage.setItem("token", token);
 
@@ -81,33 +74,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         status: error.response?.status,
         headers: error.response?.headers,
       });
+
+      if (error.code === "ECONNABORTED") {
+        throw new Error("Request timed out. Please try again.");
+      }
+
       if (error.response) {
+        if (error.response.status === 500) {
+          throw new Error("Server error. Please try again in a few moments.");
+        }
         throw new Error(error.response.data.message || "Login failed");
       }
-      throw new Error("Network error. Please try again.");
+
+      if (error.request) {
+        throw new Error(
+          "Network error. Please check your connection and try again."
+        );
+      }
+
+      throw new Error("An unexpected error occurred. Please try again.");
     }
   };
 
-  // Update the signup function to match the API
+  // Update the signup function to use the configured axios instance
   const signup = async (name: string, email: string, password: string) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, {
-        username: name, // API expects username instead of name
+      const response = await axiosInstance.post("/auth/signup", {
+        username: name,
         email,
         password,
       });
 
-      // Update to match the API response structure
       const token = response.data.token;
       localStorage.setItem("token", token);
 
-      // Fetch user details with the token
       await fetchUser(token);
     } catch (error: any) {
+      if (error.code === "ECONNABORTED") {
+        throw new Error("Request timed out. Please try again.");
+      }
+
       if (error.response) {
+        if (error.response.status === 500) {
+          throw new Error("Server error. Please try again in a few moments.");
+        }
         throw new Error(error.response.data.message || "Signup failed");
       }
-      throw new Error("Network error. Please try again.");
+
+      if (error.request) {
+        throw new Error(
+          "Network error. Please check your connection and try again."
+        );
+      }
+
+      throw new Error("An unexpected error occurred. Please try again.");
     }
   };
 
