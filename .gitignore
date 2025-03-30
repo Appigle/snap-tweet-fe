@@ -78,3 +78,5 @@ next-env.d.ts
 *-lock.yaml
 .swc
 .cursor
+# Local Netlify folder
+.netlify
